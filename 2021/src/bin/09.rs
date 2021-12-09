@@ -14,30 +14,27 @@ fn find_basin_size(
     let mut visited: HashSet<(usize, usize)> = HashSet::new();
     queue.push_back((start_x, start_y));
     while let Some((x, y)) = queue.pop_front() {
-        let t = (x + 1, y);
-        if x < width - 1 && !visited.contains(&t) && map[y * width + x + 1] < 9 {
-            visited.insert(t);
-            queue.push_back(t);
+        if map[y * width + x] == 9 || visited.contains(&(x, y)) {
+            continue;
         }
-        let t = (x.saturating_sub(1), y);
-        if x > 0 && !visited.contains(&t) && map[y * width + x - 1] < 9 {
-            visited.insert(t);
-            queue.push_back(t);
+        visited.insert((x, y));
+        if x < width - 1 {
+            queue.push_back((x + 1, y));
         }
-        let t = (x, y + 1);
-        if y < height - 1 && !visited.contains(&t) && map[(y + 1) * width + x] < 9 {
-            visited.insert(t);
-            queue.push_back(t);
+        if x > 0 {
+            queue.push_back((x - 1, y));
         }
-        let t = (x, y.saturating_sub(1));
-        if y > 0 && !visited.contains(&t) && map[(y - 1) * width + x] < 9 {
-            visited.insert(t);
-            queue.push_back(t);
+        if y < height - 1 {
+            queue.push_back((x, y + 1));
+        }
+        if y > 0 {
+            queue.push_back((x, y - 1));
         }
     }
-    // TODO: figure out how to get this to work with tuples
-    //visited.filter(|(x, y)| map[y * width + x] < 9).len()
-    visited.len()
+    visited
+        .iter()
+        .filter(|&&(x, y)| map[y * width + x] < 9)
+        .count()
 }
 
 fn run(filename: &str) -> (usize, usize) {
