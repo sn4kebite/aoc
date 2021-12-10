@@ -1,6 +1,7 @@
 use std::collections::HashMap;
-use std::io;
+use std::fs::File;
 use std::io::BufRead;
+use std::io::BufReader;
 
 const REQUIRED_FIELDS: &'static [&'static str] = &["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 
@@ -39,16 +40,54 @@ impl Passport {
         if eyr < 2020 || eyr > 2030 {
             return false;
         }
+        let hgt = self.fields.get("hgt").unwrap();
+        match &hgt[hgt.len() - 2..] {
+            "cm" => {
+                let hgt = hgt[0..hgt.len() - 2].parse::<usize>().unwrap();
+                if hgt < 150 || hgt > 193 {
+                    return false;
+                }
+            }
+            "in" => {
+                let hgt = hgt[0..hgt.len() - 2].parse::<usize>().unwrap();
+                if hgt < 59 || hgt > 76 {
+                    return false;
+                }
+            }
+            _ => return false,
+        }
+        let hcl = self.fields.get("hcl").unwrap();
+        if hcl.len() != 7 || hcl.chars().nth(0).unwrap() != '#' {
+            return false;
+        }
+        for c in hcl[1..].chars() {
+            match c.to_lowercase() {
+                _ if c.is_numeric() => (),
+                _ if c >= 'a' && c <= 'f' => (),
+                _ => return false,
+            }
+        }
+        let ecl = self.fields.get("ecl").unwrap();
+        match ecl.as_str() {
+            "amb" | "blu" | "brn" | "gry" | "grn" | "hzl" | "oth" => (),
+            _ => return false,
+        }
+        let pid = self.fields.get("pid").unwrap();
+        if pid.len() != 9 || !pid.chars().all(|c| c.is_numeric()) {
+            return false;
+        }
         true
     }
 }
 
-fn main() {
+fn run(filename: &str) -> (usize, usize) {
     let mut fields: HashMap<String, String> = HashMap::new();
     let mut passport: Passport;
     let mut valid = 0;
     let mut valid_strict = 0;
-    for line in io::stdin().lock().lines() {
+    let file = File::open(filename).unwrap();
+    let reader = BufReader::new(file);
+    for line in reader.lines() {
         let line = line.unwrap();
         let line = line.trim();
         if line.len() == 0 {
@@ -73,7 +112,6 @@ fn main() {
     }
     if fields.len() > 0 {
         passport = Passport::new(fields);
-        fields = HashMap::new();
         if passport.is_valid() {
             valid += 1;
         }
@@ -81,6 +119,32 @@ fn main() {
             valid_strict += 1;
         }
     }
-    println!("valid: {}", valid);
-    println!("strict: {}", valid_strict);
+    (valid, valid_strict)
+}
+
+fn main() {
+    println!("{:?}", run("input/04-example1.txt"));
+    println!("{:?}", run("input/04-example2.txt"));
+    println!("{:?}", run("input/04-example3.txt"));
+    println!("{:?}", run("input/04.txt"));
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_example_04() {
+        let (first, _) = super::run("input/04-example1.txt");
+        assert_eq!(first, 2);
+        let (_, second) = super::run("input/04-example2.txt");
+        assert_eq!(second, 0);
+        let (_, second) = super::run("input/04-example3.txt");
+        assert_eq!(second, 4);
+    }
+
+    #[test]
+    fn test_input_04() {
+        let (first, second) = super::run("input/04.txt");
+        assert_eq!(first, 208);
+        assert_eq!(second, 167);
+    }
 }

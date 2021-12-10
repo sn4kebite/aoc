@@ -1,5 +1,6 @@
-use std::io;
+use std::fs::File;
 use std::io::BufRead;
+use std::io::BufReader;
 
 use regex::Regex;
 
@@ -35,11 +36,13 @@ impl Policy {
     }
 }
 
-fn main() {
+fn run(filename: &str) -> (usize, usize) {
     let re = Regex::new(r"(\d+)-(\d+) (\w+): (.+)").unwrap();
     let mut valid_old = 0;
     let mut valid_new = 0;
-    for line in io::stdin().lock().lines() {
+    let file = File::open(filename).unwrap();
+    let reader = BufReader::new(file);
+    for line in reader.lines() {
         let line = line.unwrap();
         let matches = re.captures(line.as_str()).unwrap();
         let policy = Policy::new(
@@ -54,6 +57,27 @@ fn main() {
             valid_new += 1;
         }
     }
-    println!("Old valid passwords: {}", valid_old);
-    println!("New valid passwords: {}", valid_new);
+    (valid_old, valid_new)
+}
+
+fn main() {
+    println!("{:?}", run("input/02-example.txt"));
+    println!("{:?}", run("input/02.txt"));
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_example_02() {
+        let (first, second) = super::run("input/02-example.txt");
+        assert_eq!(first, 2);
+        assert_eq!(second, 1);
+    }
+
+    #[test]
+    fn test_input_02() {
+        let (first, second) = super::run("input/02.txt");
+        assert_eq!(first, 560);
+        assert_eq!(second, 303);
+    }
 }

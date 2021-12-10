@@ -1,5 +1,6 @@
-use std::io;
+use std::fs::File;
 use std::io::BufRead;
+use std::io::BufReader;
 
 struct Map {
     width: usize,
@@ -31,11 +32,13 @@ impl Map {
     }
 }
 
-fn main() {
+fn run(filename: &str) -> (usize, usize) {
     let mut height = 0;
     let mut width = 0;
     let mut map: Vec<bool> = vec![];
-    for line in io::stdin().lock().lines() {
+    let file = File::open(filename).unwrap();
+    let reader = BufReader::new(file);
+    for line in reader.lines() {
         let line = line.unwrap();
         let line = line.trim();
         if line.len() == 0 {
@@ -48,11 +51,37 @@ fn main() {
         map.extend(line.chars().map(|c| c == '#'));
     }
     let map = Map::new(width, height, map);
+    let mut tree_count = 0;
     let mut product = 1;
     for [xd, yd] in [[1, 1], [3, 1], [5, 1], [7, 1], [1, 2]] {
         let trees = map.traverse(xd, yd);
-        println!("Trees [{},{}]: {}", xd, yd, trees);
+        //println!("Trees [{},{}]: {}", xd, yd, trees);
+        if xd == 3 {
+            tree_count = trees;
+        }
         product *= trees;
     }
-    println!("Product: {}", product);
+    (tree_count, product)
+}
+
+fn main() {
+    println!("{:?}", run("input/03-example.txt"));
+    println!("{:?}", run("input/03.txt"));
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_example_03() {
+        let (first, second) = super::run("input/03-example.txt");
+        assert_eq!(first, 7);
+        assert_eq!(second, 336);
+    }
+
+    #[test]
+    fn test_input_03() {
+        let (first, second) = super::run("input/03.txt");
+        assert_eq!(first, 278);
+        assert_eq!(second, 9709761600);
+    }
 }
