@@ -68,14 +68,14 @@ fn main() {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn test_example_09() {
+    fn test_example_10() {
         let (first, second) = super::run("input/10-example.txt");
         assert_eq!(first, 26397);
         assert_eq!(second, 288957);
     }
 
     #[test]
-    fn test_input_09() {
+    fn test_input_10() {
         let (first, second) = super::run("input/10.txt");
         assert_eq!(first, 294195);
         assert_eq!(second, 3490802734);
