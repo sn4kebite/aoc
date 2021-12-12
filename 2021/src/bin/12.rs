@@ -25,13 +25,12 @@ fn traverse_inner(
     map: &HashMap<String, HashSet<String>>,
     current: &String,
     visited: &HashSet<String>,
-    visit_twice: bool,
     visited_twice: bool,
 ) -> usize {
     let mut ends = 0;
     let mut visited_twice = visited_twice;
     if visited.contains(current) {
-        if !visit_twice || visited_twice || current == "start" {
+        if visited_twice || current == "start" {
             return ends;
         } else {
             visited_twice = true;
@@ -46,14 +45,14 @@ fn traverse_inner(
     }
     let path = map.get(current).unwrap();
     for name in path {
-        ends += traverse_inner(&map, name, &visited, visit_twice, visited_twice);
+        ends += traverse_inner(&map, name, &visited, visited_twice);
     }
     ends
 }
 
 fn traverse(map: &HashMap<String, HashSet<String>>, visit_twice: bool) -> usize {
     let visited: HashSet<String> = HashSet::new();
-    traverse_inner(&map, &String::from("start"), &visited, visit_twice, false)
+    traverse_inner(&map, &String::from("start"), &visited, !visit_twice)
 }
 
 fn run(filename: &str) -> (usize, usize) {
