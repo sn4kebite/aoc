@@ -67,8 +67,7 @@ fn run_insertion(filename: &str, steps: usize) -> usize {
             *rule_count.entry(rule).or_insert(0) += count;
         }
     }
-    element_count.iter().map(|(_, count)| count).max().unwrap()
-        - element_count.iter().map(|(_, count)| count).min().unwrap()
+    element_count.values().max().unwrap() - element_count.values().min().unwrap()
 }
 
 fn run(filename: &str) -> (usize, usize) {
