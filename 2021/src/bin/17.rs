@@ -2,12 +2,12 @@ use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 
-fn foo(fx: i32, tx: i32, fy: i32, ty: i32, vx: i32, vy: i32) -> Option<i32> {
+fn find_hit(fx: i32, tx: i32, fy: i32, ty: i32, vx: i32, vy: i32) -> Option<i32> {
     let mut x = 0;
     let mut y = 0;
     let mut vx = vx;
     let mut vy = vy;
-    let mut hy = -99;
+    let mut hy = i32::min_value();
     while x <= tx && y >= fy {
         if x >= fx && y <= ty {
             return Some(hy);
@@ -45,7 +45,7 @@ fn run(filename: &str) -> (i32, i32) {
     let mut hits = 0;
     for vx in 0..500 {
         for vy in -500..500 {
-            if let Some(i) = foo(fx, tx, fy, ty, vx, vy) {
+            if let Some(i) = find_hit(fx, tx, fy, ty, vx, vy) {
                 hits += 1;
                 if i > hy {
                     hy = i;
