@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 /// get the (lose, win) shapes for the given (opponent, player) shapes
-fn get_shapes(a: usize, b: usize) -> (usize, usize) {
+fn get_shapes(a: usize, _b: usize) -> (usize, usize) {
     (
         {
             let v = a as isize - 1;

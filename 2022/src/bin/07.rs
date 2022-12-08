@@ -46,7 +46,7 @@ impl Directory {
 
     pub fn get_file(&mut self, name: &str, size: usize) -> Rc<RefCell<FileEntry>> {
         let f = Rc::new(RefCell::new(FileEntry {
-            name: name.to_owned(),
+            _name: name.to_owned(),
             size,
         }));
         self.files.push(f.clone());
@@ -67,13 +67,8 @@ impl Directory {
 }
 
 struct FileEntry {
-    pub name: String,
+    pub _name: String,
     pub size: usize,
-}
-
-enum Entry {
-    Directory(Directory),
-    FileEntry(FileEntry),
 }
 
 fn run(filename: &str) -> (usize, usize) {

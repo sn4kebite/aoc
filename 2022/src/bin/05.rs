@@ -12,7 +12,7 @@ fn _run(filename: &str, crate_mover_9001: bool) -> String {
             break;
         }
         if stacks.len() == 0 {
-            for i in 0..stack_len {
+            for _ in 0..stack_len {
                 stacks.push(vec![]);
             }
         }
