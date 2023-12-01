@@ -15,14 +15,19 @@ fn run(filename: &str) -> (usize, usize) {
         // hold digit indices and values
         let mut digits: Vec<(usize, usize)> = line
             .char_indices()
+            // Filter all characters that are valid base-10 digits
             .filter(|(_, c)| c.is_digit(10))
+            // Transform filtered characters to usize
             .map(|(i, c)| (i, c.to_digit(10).expect("invalid digit") as usize))
             .collect();
         // ditto for words
         let words: Vec<(usize, usize)> = WORDS
             .iter()
             .enumerate()
-            .map(|(si, w)| line.match_indices(w).map(move |(i, _)| (i, si + 1)))
+            // Map each (index, word) and iterate over matches for that word in line
+            // For each match, return the line index (i) and word number (word index + 1)
+            .map(|(wi, w)| line.match_indices(w).map(move |(i, _)| (i, wi + 1)))
+            // The result is a nested array so we need to flatten it
             .flatten()
             .collect();
         digits.sort_by_key(|e| e.0);
