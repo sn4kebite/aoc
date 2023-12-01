@@ -57,13 +57,11 @@ mod tests {
     fn test_example_01() {
         let (first, _) = super::run("input/01-example1.txt");
         assert_eq!(first, 142);
-        //assert_eq!(second, 0);
     }
 
     #[test]
     fn test_example_02() {
         let (_, second) = super::run("input/01-example2.txt");
-        //assert_eq!(first, 0);
         assert_eq!(second, 281);
     }
 
