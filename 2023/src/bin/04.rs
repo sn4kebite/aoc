@@ -13,11 +13,11 @@ fn run(filename: &str) -> (usize, usize) {
         let (winning, numbers) = line.split_once(": ").unwrap().1.split_once(" | ").unwrap();
         let winning: HashSet<usize> = winning
             .split_whitespace()
-            .map(|s| s.parse::<usize>().unwrap())
+            .map(|s| s.parse().unwrap())
             .collect();
         let numbers: HashSet<usize> = numbers
             .split_whitespace()
-            .map(|s| s.parse::<usize>().unwrap())
+            .map(|s| s.parse().unwrap())
             .collect();
         let matches: HashSet<usize> = winning.intersection(&numbers).map(|n| *n).collect();
         if !matches.is_empty() {
